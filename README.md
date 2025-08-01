@@ -35,29 +35,35 @@ This MCP server provides comprehensive Python type annotation capabilities:
 - **Project Context**: Get project-wide type information for better inference
 - **Pyrefly Integration**: Leverage Pyrefly's powerful type inference engine
 
+### ⚡ **Type Enhancement**
+- **Automatic Type Addition**: Add type annotations using Pyrefly's autotype feature
+- **File-based Processing**: Process individual Python files with type annotations
+- **Optional Backup**: Can create backup files before modification (when requested)
+- **Project Integration**: Respects pyrefly configuration files
+
 ### ✅ **Type Checking**
 - **Pyrefly Integration**: Validate type annotations using Pyrefly's built-in type checker
-- **Error Reporting**: Detailed type checking results with error locations
-- **Continuous Validation**: Check types after adding annotations
+- **Error Reporting**: Basic type checking results and error output
+- **File-based Validation**: Check individual files for type errors
 
 ### 🤖 **LLM Integration**
-- **Contextual Prompts**: Pre-built prompts for type analysis tasks
-- **Structured Data**: Machine-readable analysis results
-- **Workflow Automation**: Complete analyze → annotate → verify workflows
+- **Basic Prompts**: Pre-built prompts for type analysis tasks
+- **Structured Data**: JSON-formatted analysis results
+- **Simple Workflows**: Basic analyze → annotate → verify workflows
 
 ## Why Use This MCP Server?
 
 ### For LLMs and AI Assistants
-- **Seamless Integration**: Works with any MCP-compatible AI client
-- **Structured Responses**: Provides machine-readable data for better decision making
-- **Context Awareness**: Understands project structure for better type inference
-- **Error Handling**: Graceful handling of edge cases and errors
+- **MCP Integration**: Works with MCP-compatible AI clients
+- **JSON Responses**: Provides structured data for better decision making
+- **Basic Context**: Simple project structure analysis
+- **Error Handling**: Basic error reporting and graceful failure handling
 
 ### For Developers
-- **Cold Start Solution**: Helps with completely untyped codebases
-- **Incremental Typing**: Gradual type adoption strategies
-- **Quality Assurance**: Automated type checking and validation
-- **Tool Integration**: Works with existing Python development workflows
+- **Cold Start Helper**: Assists with completely untyped codebases
+- **Basic Typing**: Simple type annotation workflows
+- **File Processing**: Individual file type checking and annotation
+- **Tool Integration**: Basic integration with existing Python development workflows
 
 ## Installation
 
@@ -156,13 +162,11 @@ Add type annotations to a Python file using Pyrefly.
 **Parameters:**
 - `file_path` (required): Path to the Python file
 - `backup` (optional): Create backup before modifying (default: true)
-- `aggressive` (optional): Use aggressive type inference (default: false)
-- `safe_mode` (optional): Use conservative type inference (default: true)
 
 **Example:**
 ```python
 # LLM can request:
-# "Add type annotations to 'src/models.py' using safe mode"
+# "Add type annotations to 'src/models.py'"
 ```
 
 ### `type_check_file`
@@ -204,7 +208,7 @@ Create a comprehensive plan for improving type coverage in a project.
 ```python
 # LLM workflow:
 # 1. "Analyze 'calculator.py' for type needs"
-# 2. "Add types to 'calculator.py' using safe mode"  
+# 2. "Add types to 'calculator.py'"
 # 3. "Type check 'calculator.py' and report results"
 ```
 
@@ -222,7 +226,7 @@ Create a comprehensive plan for improving type coverage in a project.
 ```python
 # For completely untyped files:
 # 1. "Analyze 'legacy_code.py' - it has no types at all"
-# 2. "Add types using aggressive mode since it's completely untyped"
+# 2. "Add types to 'legacy_code.py'" 
 # 3. "Check for type errors and suggest corrections"
 ```
 
@@ -230,23 +234,23 @@ Create a comprehensive plan for improving type coverage in a project.
 
 ### 🥶 **Cold Start Projects**
 - **Challenge**: Legacy codebases with no type annotations
-- **Solution**: Use aggressive mode with LLM guidance for inference
-- **Benefit**: Bootstrap type coverage quickly
+- **Solution**: Use Pyrefly autotype with basic MCP integration
+- **Benefit**: Start adding types to untyped codebases
 
 ### 📈 **Incremental Typing**
 - **Challenge**: Adding types to active projects gradually
-- **Solution**: Project context analysis with prioritized typing plans
-- **Benefit**: Strategic, non-disruptive type adoption
+- **Solution**: File-by-file type annotation with basic project context
+- **Benefit**: Gradual type adoption without major disruption
 
 ### 🔧 **CI/CD Integration**
 - **Challenge**: Maintaining type quality in team projects
-- **Solution**: Automated analysis and checking in pipelines
-- **Benefit**: Consistent type coverage enforcement
+- **Solution**: Basic type checking integration in pipelines
+- **Benefit**: Simple type validation workflows
 
 ### 🤝 **LLM-Assisted Development**
 - **Challenge**: LLMs need context about typing needs
-- **Solution**: Structured analysis data and contextual prompts
-- **Benefit**: Better AI assistance for typed Python development
+- **Solution**: Basic structured analysis data and simple prompts
+- **Benefit**: Improved AI assistance for Python type annotation tasks
 
 ## Configuration
 
@@ -262,6 +266,18 @@ project-includes = ["src/**/*.py"]
 
 # Files to exclude from type checking
 project-excludes = ["tests/**", "**/__pycache__/**"]
+
+# Python version to assume
+python-version = "3.12"
+
+# How to handle untyped function definitions
+untyped-def-behavior = "check-and-infer-return-type"
+
+# Configure specific error types
+[errors]
+# Enable/disable specific error types
+bad-assignment = true
+missing-return-type = true
 ```
 
 2. **`pyproject.toml`** file under the `[tool.pyrefly]` section:
@@ -276,6 +292,16 @@ project-excludes = ["tests/**", "**/__pycache__/**"]
 
 # Python version and platform
 python-version = "3.12"
+python-platform = "linux"
+
+# Type checking behavior
+untyped-def-behavior = "check-and-infer-return-type"
+ignore-missing-imports = ["requests.*", "numpy.*"]
+
+# Error configuration
+[tool.pyrefly.errors]
+bad-assignment = true
+missing-return-type = true
 ```
 
 See the [Pyrefly Configuration Documentation](https://pyrefly.org/en/docs/configuration/) for all available options.
