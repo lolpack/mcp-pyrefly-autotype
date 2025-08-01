@@ -1,4 +1,4 @@
-# MCP Pyrefly Autotype Server
+# [WORK IN PROGRESS AND UNTESTED - USE AT OWN RISK] MCP Pyrefly Autotype Server
 
 A Model Context Protocol (MCP) server that provides automatic Python type annotation using Pyrefly. This server enables LLMs and AI coding assistants to analyze Python code, add type annotations, and perform type checking seamlessly.
 
