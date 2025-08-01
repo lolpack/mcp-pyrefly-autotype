@@ -1,0 +1,4 @@
+# Pyrefly configuration for mcp-pyrefly-autotype project
+
+# Files to include in type checking - only source code
+project_includes = ["src/**/*.py"]
