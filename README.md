@@ -35,12 +35,6 @@ This MCP server provides comprehensive Python type annotation capabilities:
 - **Project Context**: Get project-wide type information for better inference
 - **Pyrefly Integration**: Leverage Pyrefly's powerful type inference engine
 
-### ⚡ **Type Enhancement**
-- **Automatic Type Addition**: Add type annotations using Pyrefly's autotype feature
-- **Safe Mode**: Conservative type inference to avoid incorrect annotations
-- **Aggressive Mode**: More comprehensive type inference for experienced users
-- **Backup Creation**: Automatically backup files before modification
-
 ### ✅ **Type Checking**
 - **Pyrefly Integration**: Validate type annotations using Pyrefly's built-in type checker
 - **Error Reporting**: Detailed type checking results with error locations
