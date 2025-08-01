@@ -350,7 +350,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Related Projects
 
-- [Pyrefly](https://github.com/pyrefly/pyrefly) - The core type inference engine
+- [Pyrefly](https://github.com/facebook/pyrefly) - The core type inference engine
 - [Model Context Protocol](https://github.com/modelcontextprotocol/specification) - The MCP specification
 
 ## Support
