@@ -7,7 +7,7 @@ Run this script to test the server functionality locally.
 import asyncio
 import tempfile
 import os
-from mcp_pyrefly_autotype.server import PyreflyAnalyzer, run_pyrefly_autotype, run_pyrefly_check
+from mcp_pyrefly_autotype.server import PyreflyAnalyzer, run_pyrefly_check
 
 async def test_workflow():
     """Test the complete workflow with the example untyped file."""
@@ -54,7 +54,7 @@ async def test_workflow():
     
         print(f"\n2️⃣ Adding type annotations to {os.path.basename(temp_file)}...")
         try:
-            result = await run_pyrefly_autotype(temp_file, {"safe_mode": True})
+            result = await analyzer.run_pyrefly_command(["uv", "run", "pyrefly", "autotype", temp_file])
             if result["success"]:
                 print("✅ Type annotations added successfully!")
                 print(f"   Pyrefly output: {result['stdout'][:100]}...")

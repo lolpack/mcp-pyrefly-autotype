@@ -12,7 +12,6 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from mcp_pyrefly_autotype.server import (
     PyreflyAnalyzer,
-    run_pyrefly_autotype,
     run_pyrefly_check
 )
 
@@ -54,10 +53,10 @@ async def test_pyrefly_functions():
         import traceback
         traceback.print_exc()
     
-    # Test 3: Test autotype function
-    print(f"\n⚡ Testing run_pyrefly_autotype...")
+    # Test 3: Test autotype via analyzer
+    print(f"\n⚡ Testing autotype (analyzer.run_pyrefly_command)...")
     try:
-        autotype_result = await run_pyrefly_autotype(str(test_file), {"safe_mode": True})
+        autotype_result = await analyzer.run_pyrefly_command(["uv", "run", "pyrefly", "autotype", str(test_file)])
         print("✨ Autotype result:")
         print(json.dumps(autotype_result, indent=2))
     except Exception as e:

@@ -133,41 +133,6 @@ class PyreflyAnalyzer:
                 "error": str(e)
             }
 
-async def run_pyrefly_autotype(file_path: str, options: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-    """Run Pyrefly autotype on a file and return the results."""
-    try:
-        cmd = ["uv", "run", "pyrefly", "autotype", file_path]
-        
-        # Note: Pyrefly autotype doesn't have --aggressive, --safe, or --dry-run flags
-        # We can add other valid options from the help if needed
-        if options:
-            if options.get("verbose"):
-                cmd.append("--verbose")
-        
-        result = subprocess.run(
-            cmd, 
-            capture_output=True, 
-            text=True, 
-            timeout=60
-        )
-        
-        return {
-            "success": result.returncode == 0,
-            "stdout": result.stdout,
-            "stderr": result.stderr,
-            "returncode": result.returncode
-        }
-    except subprocess.TimeoutExpired:
-        return {
-            "success": False,
-            "error": "Pyrefly autotype execution timed out"
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e)
-        }
-
 async def run_pyrefly_check(file_path: str) -> Dict[str, Any]:
     """Run pyrefly type checking on a file."""
     try:
@@ -511,13 +476,10 @@ Variables needing types: {len(analysis.get('variables_needing_types', []))}"""
             except Exception as e:
                 return [types.TextContent(type="text", text=f"Failed to create backup: {e}")]
         
-        # Run Pyrefly
-        options = {
-            "aggressive": aggressive,
-            "safe_mode": safe_mode
-        }
-        
-        result = await run_pyrefly_autotype(file_path, options)
+        # Run Pyrefly autotype directly via analyzer
+        result = await pyrefly_analyzer.run_pyrefly_command([
+            "uv", "run", "pyrefly", "autotype", file_path
+        ])
         
         if result["success"]:
             return [types.TextContent(
