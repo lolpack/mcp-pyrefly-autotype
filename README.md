@@ -129,17 +129,52 @@ Add to your Claude Desktop configuration:
 
 1. Install the MCP extension for VS Code
 2. Configure the server in your workspace settings:
+3. Create a .vscode/mcp.json file
 
 ```json
 {
-  "mcp.servers": [
-    {
-      "name": "pyrefly-autotype",
-      "command": ["uv", "run", "python", "-m", "mcp_pyrefly_autotype.server"]
-    }
-  ]
+	"servers": {
+		"pyrefly-autotype": {
+			"type": "stdio",
+			"command": "uv",
+			"args": [
+				"run",
+				"mcp-pyrefly-autotype"
+			]
+		}
+	},
+	"inputs": []
 }
 ```
+
+#### Make it show up in VS Code (MCP Servers + Copilot Chat Tools)
+
+1. Install the “Model Context Protocol (MCP)” extension in VS Code and ensure GitHub Copilot is enabled/updated.
+2. Save the `.vscode/mcp.json` file shown above in the root of your workspace.
+3. Reload the window: press Ctrl+Shift+P → “Developer: Reload Window”.
+4. Verify in the MCP Servers view:
+	 - Open the Command Palette (Ctrl+Shift+P) → run “MCP: Show Servers”, or open the “MCP Servers” view from the Activity Bar.
+	 - You should see a server named `pyrefly-autotype`. Status should be Running. If not:
+		 - Confirm `uv` is installed and on PATH, and that `uv sync` has been run.
+		 - On Windows, you may need to restart VS Code after installing Python/uv.
+5. Verify in Copilot Chat Tools:
+	 - Open Copilot Chat (Ctrl+I or the Copilot icon).
+	 - In the Tools pane, expand the MCP section. You should see `pyrefly-autotype` listed. If it’s missing, check that:
+		 - The workspace is trusted (look for the “Trust” banner in VS Code).
+		 - MCP integration is enabled in Copilot settings.
+
+#### Run sample queries (inside Copilot Chat)
+
+Try these prompts in a new Copilot Chat tab. Copilot will call the server’s tools for you.
+
+- “Use the pyrefly-autotype MCP server to analyze the file `simple_untyped.py` (detailed=true), then add types to it, and finally type check it. Repeat add→check up to 3 times until type check passes.”
+- “Analyze `example_untyped.py` for missing annotations, add types with a backup, and run a type check. Summarize changes and remaining warnings.”
+- “Given the loop in SamplePrompt.md, run the agent loop on `simple_untyped.py`: add_types_to_file → type_check_file, refining up to 3 rounds.”
+
+Expected outcomes:
+- Copilot will invoke these MCP tools: `analyze_python_file`, `add_types_to_file`, `type_check_file`.
+- The file will be annotated in-place (a backup may be created depending on your request).
+- You’ll receive a summary and any remaining non-blocking warnings.
 
 ## Available Tools
 
@@ -157,7 +192,7 @@ Analyze a Python file for missing type annotations.
 ```
 
 ### `add_types_to_file`
-Add type annotations to a Python file using Pyrefly.
+Add type annotations to a Python file using Pyrefly (this invokes `pyrefly autotype` under the hood).
 
 **Parameters:**
 - `file_path` (required): Path to the Python file
@@ -389,3 +424,21 @@ For questions and support:
 ---
 
 *This MCP server bridges the gap between AI assistants and Python type annotation tools, enabling seamless integration of type enhancement workflows in AI-powered development environments.*
+
+## Sample Queries and Prompt Library
+
+The `sample_queries/` directory contains ready-to-use prompt templates you can paste into your AI client (VS Code with Copilot MCP or Claude Desktop) to drive the server effectively:
+
+- `sample_queries/PromptWithTools.md` — A compact “agent loop” prompt that instructs the assistant to use the available tools (`add_types_to_file`, `type_check_file`, and optionally `get_project_context`) and iterate up to 3 refinement rounds. Great for single-file or small feature work.
+- `sample_queries/LargeUntypedCodebase.md` — A batch-oriented workflow for incrementally typing a large, mostly-untyped repo. It includes planning, per-file refine loops, batch gates, and progress tracking guidance.
+
+How to use with VS Code + Copilot:
+- Open Copilot Chat. Ensure the `pyrefly-autotype` MCP server appears under Tools (see instructions above).
+- Open one of the markdown files in `sample_queries/`, copy the prompt, and paste it into Copilot Chat.
+- If the prompt includes tool call JSON examples, Copilot will translate them into MCP tool invocations automatically.
+
+How to use with Claude Desktop:
+- Ensure your Claude MCP configuration includes this server (see “Claude Desktop” section above).
+- Open a new chat, paste any of the prompts, and follow the agent’s steps. Claude will call the MCP tools using the provided JSON shapes.
+
+Tip: Start with `PromptWithTools.md` on a single file (e.g., `simple_untyped.py`) to see the full add → check → refine flow end to end. Then progress to `LargeUntypedCodebase.md` for multi-file, incremental adoption.

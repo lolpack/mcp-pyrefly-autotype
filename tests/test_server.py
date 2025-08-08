@@ -10,7 +10,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 from mcp_pyrefly_autotype.server import (
     PyreflyAnalyzer,
-    run_pyrefly_autotype,
     run_pyrefly_check,
     server
 )
@@ -18,10 +17,6 @@ from mcp_pyrefly_autotype.server import (
 
 class TestPyreflyAnalyzer:
     """Test the PyreflyAnalyzer class."""
-    
-    def setup_method(self):
-        """Set up test fixtures."""
-        self.analyzer = PyreflyAnalyzer()
     
     async def test_analyze_file_success(self):
         """Test successful file analysis."""
@@ -35,7 +30,8 @@ x = 42
             f.flush()
             
             # Mock the Pyrefly command
-            with patch.object(self.analyzer, 'run_pyrefly_command') as mock_cmd:
+            analyzer = PyreflyAnalyzer()
+            with patch.object(analyzer, 'run_pyrefly_command') as mock_cmd:
                 mock_cmd.return_value = {
                     "success": True,
                     "stdout": "Function hello needs type annotations\nVariable x inferred as int",
@@ -43,7 +39,7 @@ x = 42
                     "returncode": 0
                 }
                 
-                result = await self.analyzer.analyze_file(f.name)
+                result = await analyzer.analyze_file(f.name)
                 
                 assert result["file_path"] == f.name
                 assert "functions_needing_types" in result
@@ -55,15 +51,16 @@ x = 42
     
     async def test_analyze_file_error(self):
         """Test file analysis with error."""
-        with patch.object(self.analyzer, 'run_pyrefly_command') as mock_cmd:
+        analyzer = PyreflyAnalyzer()
+        with patch.object(analyzer, 'run_pyrefly_command') as mock_cmd:
             mock_cmd.return_value = {
                 "success": False,
                 "stderr": "File not found",
                 "error": "File not found"
             }
-            
-            result = await self.analyzer.analyze_file("nonexistent.py")
-            
+
+            result = await analyzer.analyze_file("nonexistent.py")
+
             assert "error" in result
             assert result["file_path"] == "nonexistent.py"
 
@@ -71,7 +68,7 @@ x = 42
 async def test_utility_functions():
     """Test utility functions."""
     
-    # Test run_pyrefly_autotype_success
+    # Test autotype via analyzer command success
     with patch('subprocess.run') as mock_run:
         mock_result = MagicMock()
         mock_result.returncode = 0
@@ -79,7 +76,8 @@ async def test_utility_functions():
         mock_result.stderr = ""
         mock_run.return_value = mock_result
         
-        result = await run_pyrefly_autotype("test.py")
+        analyzer = PyreflyAnalyzer()
+        result = await analyzer.run_pyrefly_command(["uv", "run", "pyrefly", "autotype", "test.py"])
         
         assert result["success"] is True
         assert result["stdout"] == "Types added successfully"
@@ -136,7 +134,7 @@ age = 25
             mock_result.stdout = "Types added successfully to " + temp_file
             
             # Test add types tool
-            result = await run_pyrefly_autotype(temp_file, {"safe_mode": True})
+            result = await analyzer.run_pyrefly_command(["uv", "run", "pyrefly", "autotype", temp_file])
             assert result["success"] is True
             
             # Mock Pyrefly check
@@ -170,7 +168,6 @@ async def run_all_tests():
     
     # Test PyreflyAnalyzer
     test_analyzer = TestPyreflyAnalyzer()
-    test_analyzer.setup_method()
     
     try:
         await test_analyzer.test_analyze_file_success()
